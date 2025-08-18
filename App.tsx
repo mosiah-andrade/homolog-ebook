@@ -1,8 +1,78 @@
-
 import React, { useState } from 'react';
 import homologLogo from './homolog.png';
 
-// --- Shared Helper Components ---
+// --- Serviços ---
+
+/**
+ * Envia os dados do lead para a API.
+ * @param data - Os dados do lead (nome e telefone).
+ */
+const sendLead = async (data: { name: string; phone: string }): Promise<void> => {
+  const apiUrl = import.meta.env.VITE_APP_API_URL;
+  if (!apiUrl) {
+    console.error('URL da API não configurada');
+    return;
+  }
+
+  try {
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao enviar para API');
+    }
+  } catch (error) {
+    console.error('Erro ao enviar para API:', error);
+    // Opcional: Adicionar lógica para notificar o usuário sobre o erro no envio do formulário.
+  }
+};
+
+
+// --- Utilitários ---
+
+/**
+ * Força o download de um arquivo.
+ * @param url - A URL do arquivo.
+ * @param filename - O nome do arquivo a ser salvo.
+ */
+const downloadPdf = (url: string, filename: string) => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+
+// --- Componentes de Ícone ---
+
+interface IconProps {
+  className?: string;
+}
+
+const UserIcon: React.FC<IconProps> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+);
+
+const PhoneIcon: React.FC<IconProps> = ({ className }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+  </svg>
+);
+
+const CheckIcon: React.FC<IconProps> = ({ className }) => (
+    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+);
+
+// --- Componentes da UI ---
 
 const HomologSolarLogo = () => (
   <div className="flex flex-col items-center mb-8">
@@ -13,38 +83,27 @@ const HomologSolarLogo = () => (
     </div>
   </div>
 );
-const DownloadIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-  </svg>
+
+const ThankYouPopup: React.FC<{ onClose: () => void }> = ({ onClose }) => (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+    <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm text-center">
+      <h2 className="text-2xl font-bold mb-4 text-[#002D5B]">Obrigado!</h2>
+      <p className="mb-4">Seu download começou.<br />Aproveite o checklist!</p>
+      <button
+        className="mt-2 px-6 py-2 bg-[#f37021] text-white rounded-lg font-bold hover:bg-[#d9651d] transition"
+        onClick={onClose}
+      >
+        Fechar
+      </button>
+    </div>
+  </div>
 );
 
-const UserIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-  </svg>
-);
-
-const PhoneIcon = ({ className }: { className?: string }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-  </svg>
-);
-
-const CheckIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-);
-
-
-// --- Page Components ---
-
-const LandingPage = ({ onCaptureSuccess }: { onCaptureSuccess: (e: React.FormEvent<HTMLFormElement>) => void }) => (
+const LandingPage: React.FC<{ onCaptureSuccess: (e: React.FormEvent<HTMLFormElement>) => void }> = ({ onCaptureSuccess }) => (
   <main className="bg-slate-50 min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
     <div className="bg-white rounded-2xl shadow-2xl max-w-6xl w-full mx-auto overflow-hidden grid grid-cols-1 lg:grid-cols-2 animate-fade-in">
       
-      {/* Left Column: Visuals & Branding */}
+      {/* Coluna da Esquerda: Visuais e Branding */}
       <div className="hidden lg:flex flex-col items-center justify-center bg-slate-100 p-8">
         <HomologSolarLogo />
         <img 
@@ -54,7 +113,7 @@ const LandingPage = ({ onCaptureSuccess }: { onCaptureSuccess: (e: React.FormEve
         />
       </div>
 
-      {/* Right Column: Content & Form */}
+      {/* Coluna da Direita: Conteúdo e Formulário */}
       <div className="flex flex-col justify-center p-8 sm:p-12">
         <h1 className="font-bold text-3xl sm:text-4xl text-[#002D5B] font-roboto-slab leading-tight">
           Chega de Atrasos na Homologação de Projetos Solares!
@@ -104,68 +163,8 @@ const LandingPage = ({ onCaptureSuccess }: { onCaptureSuccess: (e: React.FormEve
   </main>
 );
 
-const DownloadPage = () => (
-  <main className="bg-slate-100 min-h-screen w-full flex items-center justify-center p-4 sm:p-6 lg:p-8">
-    <div className="bg-white rounded-2xl shadow-2xl max-w-5xl w-full mx-auto overflow-hidden grid grid-cols-1 md:grid-cols-2 animate-fade-in">
-      <div className="relative h-64 md:h-auto min-h-[400px]">
-        <img src="https://i.imgur.com/G5g2mJc.png" alt="Pré-visualização do Checklist da Homolog Solar" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-      </div>
-      <div className="flex flex-col justify-center p-8 sm:p-12">
-        <HomologSolarLogo />
-        <h1 className="font-bold text-2xl sm:text-3xl text-center text-[#002D5B] uppercase leading-tight">
-          Checklist de Homologação à Prova de Falhas: <span className="text-[#f37021]">Energisa</span>
-        </h1>
-        <p className="text-center text-slate-600 mt-4 text-sm sm:text-base">
-          O seu guia de bolso para aprovar projetos de energia solar de forma rápida, sem erros e sem atrasos.
-        </p>
-        <a 
-          href="/Checklist_HomologSolar_Energisa.pdf" 
-          target='_blank' 
-          className="mt-10 mx-auto flex items-center justify-center gap-3 w-full max-w-xs bg-[#fcc946] text-[#002D5B] font-bold text-lg py-4 px-6 rounded-lg shadow-lg hover:bg-[#ffc12b] transform hover:-translate-y-1 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#fcc946]/50"
-        >
-          <DownloadIcon className="w-6 h-6" />
-          <span>BAIXAR O GUIA</span>
-        </a>
-        <p className="text-center text-xs text-slate-400 mt-4">Download gratuito em PDF</p>
-      </div>
-    </div>
-  </main>
-);
 
-const handleCaptureSuccess = async (event: React.FormEvent<HTMLFormElement>) => {
-  event.preventDefault();
-  const formData = new FormData(event.currentTarget);
-  const name = formData.get('name');
-  const phone = formData.get('phone');
-
-  try {
-    // 1. Envia para a API
-    const response = await fetch(process.env.REACT_APP_API_URL as string, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, phone }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro ao enviar para API');
-    }
-
-    // 2. Só baixa o PDF se o POST foi bem-sucedido
-    const link = document.createElement('a');
-    link.href = '/Checklist_HomologSolar_Energisa.pdf';
-    link.download = 'Checklist_HomologSolar_Energisa.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-  } catch (error) {
-    console.error(error);
-    // Opcional: mostrar mensagem de erro ao usuário
-  }
-};
-
-// --- Main Application Logic ---
+// --- Componente Principal ---
 
 export default function App() {
   const [showThankYou, setShowThankYou] = useState(false);
@@ -173,48 +172,22 @@ export default function App() {
   const handleCaptureSuccess = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const name = formData.get('name');
-    const phone = formData.get('phone');
+    const name = formData.get('name') as string;
+    const phone = formData.get('phone') as string;
 
     // 1. Baixa o PDF imediatamente
-    const link = document.createElement('a');
-    link.href = '/Checklist_HomologSolar_Energisa.pdf';
-    link.download = 'Checklist_HomologSolar_Energisa.pdf';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    downloadPdf('/Checklist_HomologSolar_Energisa.pdf', 'Checklist_HomologSolar_Energisa.pdf');
 
     // 2. Mostra popup de agradecimento
     setShowThankYou(true);
 
     // 3. Envia para a API em segundo plano
-    try {
-      await fetch(import.meta.env.VITE_APP_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, phone }),
-      });
-    } catch (error) {
-      console.error('Erro ao enviar para API:', error);
-    }
+    sendLead({ name, phone });
   };
 
   return (
     <>
-      {showThankYou && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
-          <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm text-center">
-            <h2 className="text-2xl font-bold mb-4 text-[#002D5B]">Obrigado!</h2>
-            <p className="mb-4">Seu download começou.<br />Aproveite o checklist!</p>
-            <button
-              className="mt-2 px-6 py-2 bg-[#f37021] text-white rounded-lg font-bold hover:bg-[#d9651d] transition"
-              onClick={() => setShowThankYou(false)}
-            >
-              Fechar
-            </button>
-          </div>
-        </div>
-      )}
+      {showThankYou && <ThankYouPopup onClose={() => setShowThankYou(false)} />}
       <LandingPage onCaptureSuccess={handleCaptureSuccess} />
     </>
   );
