@@ -119,7 +119,11 @@ const DownloadPage = () => (
         <p className="text-center text-slate-600 mt-4 text-sm sm:text-base">
           O seu guia de bolso para aprovar projetos de energia solar de forma rápida, sem erros e sem atrasos.
         </p>
-        <a href="/Checklist_Homolog_Solar_Energisa.pdf" download="Checklist_Homolog_Solar_Energisa.pdf" className="mt-10 mx-auto flex items-center justify-center gap-3 w-full max-w-xs bg-[#fcc946] text-[#002D5B] font-bold text-lg py-4 px-6 rounded-lg shadow-lg hover:bg-[#ffc12b] transform hover:-translate-y-1 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#fcc946]/50">
+        <a 
+          href="/Checklist_HomologSolar_Energisa.pdf" 
+          target='_blank' 
+          className="mt-10 mx-auto flex items-center justify-center gap-3 w-full max-w-xs bg-[#fcc946] text-[#002D5B] font-bold text-lg py-4 px-6 rounded-lg shadow-lg hover:bg-[#ffc12b] transform hover:-translate-y-1 transition-all duration-300 ease-in-out focus:outline-none focus:ring-4 focus:ring-[#fcc946]/50"
+        >
           <DownloadIcon className="w-6 h-6" />
           <span>BAIXAR O GUIA</span>
         </a>
@@ -149,8 +153,8 @@ const handleCaptureSuccess = async (event: React.FormEvent<HTMLFormElement>) => 
 
     // 2. Só baixa o PDF se o POST foi bem-sucedido
     const link = document.createElement('a');
-    link.href = '/Checklist_Homolog_Solar_Energisa.pdf';
-    link.download = 'Checklist_Homolog_Solar_Energisa.pdf';
+    link.href = '/Checklist_HomologSolar_Energisa.pdf';
+    link.download = 'Checklist_HomologSolar_Energisa.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -174,8 +178,8 @@ export default function App() {
 
     // 1. Baixa o PDF imediatamente
     const link = document.createElement('a');
-    link.href = '/Checklist_Homolog_Solar_Energisa.pdf';
-    link.download = 'Checklist_Homolog_Solar_Energisa.pdf';
+    link.href = '/Checklist_HomologSolar_Energisa.pdf';
+    link.download = 'Checklist_HomologSolar_Energisa.pdf';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
